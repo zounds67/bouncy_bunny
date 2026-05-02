@@ -17,21 +17,20 @@ BUNNY_X = 100
 
 # How big is the bunny circle?
 # Try a number between 15 and 30
-BUNNY_SIZE = ???
+BUNNY_SIZE = 20
 
 # How fast does the bunny fall?
 # Try a number between 0.3 and 0.8
 # Bigger number = falls faster!
-GRAVITY = ???
-
+GRAVITY = 0.5
 # How strong is a flap/jump?
 # Try a number between 7 and 12
 # Bigger number = jumps higher!
-FLAP_POWER = ???
+FLAP_POWER = 8
 
 # How fast do walls move toward the bunny?
 # Try a number between 2 and 5
-WALL_SPEED = ???
+WALL_SPEED = 4
 
 # How wide are the walls?
 WALL_WIDTH = 60
@@ -39,7 +38,7 @@ WALL_WIDTH = 60
 # How big is the gap between top and bottom walls?
 # Try a number between 150 and 220
 # Smaller gap = harder game!
-GAP_SIZE = ???
+GAP_SIZE = 165
 
 # How often do new walls appear? (in frames)
 # 60 frames = about 1 second
@@ -49,10 +48,10 @@ SPAWN_TIME = 100
 POWERUP_EVERY = 15
 
 # How many points for collecting a carrot?
-CARROT_POINTS = ???
+CARROT_POINTS = 10
 
 # How many coins do you earn per carrot?
-CARROT_COINS = ???
+CARROT_COINS = 5
 
 
 # ============================================================
@@ -151,13 +150,29 @@ loadData = ->
 
 drawBunny = (x, y, skinIndex = currentSkin) ->
   # YOUR CODE HERE
-  # Step 1: Set fill color to the skin color and draw the body circle
+  # Step 1: Set fill color to the skin color and draw the body circle  
+  
+  ctx.fillStyle = SKINS[skinIndex].color
+  ctx.beginPath()
+  ctx.arc( x, y, BUNNY_SIZE, 0, Math.PI * 2)
+  ctx.fill()
 
   # Step 2: Add a black outline (set strokeStyle, lineWidth, then stroke)
-
+  ctx.strokeStyle = 'black'
+  ctx.lineWidth = 5
+  ctx.stroke()
   # Step 3: Draw two small black circles for eyes (radius 3)
+  #ctx.fillStyle = '#000000'
+  #ctx.arc(x, y, 3, 0, Math.PI * 2)
+  ctx.fillStyle = 'black'
+  ctx.beginPath()
+  ctx.arc( x-6, y-4, 5, 0, Math.PI * 2)
+  ctx.fill()
 
-
+  ctx.fillStyle = 'black'
+  ctx.beginPath()
+  ctx.arc( x+6, y-4, 5, 0, Math.PI * 2)
+  ctx.fill()
 # ============================================================
 # CHALLENGE 3: Draw the walls!
 # ============================================================
@@ -266,8 +281,8 @@ drawHome = ->
   ctx.font = 'bold 36px Arial'
   ctx.textAlign = 'center'
   ctx.fillText 'Bouncy Bunny', W / 2, 80
-
   drawBunny W / 2, 150
+
   ctx.fillStyle = '#333'
   ctx.font = '16px Arial'
   ctx.fillText SKINS[currentSkin].name, W / 2, 190
@@ -369,22 +384,24 @@ drawShop = ->
 applyGravity = ->
   # YOUR CODE HERE
   # Add GRAVITY to bunnySpeed to make the bunny accelerate downward
+  bunnySpeed += GRAVITY
 
 moveBunny = ->
   # YOUR CODE HERE
   # Add bunnySpeed to bunnyY to move the bunny
+  bunnyY += bunnySpeed
 
 flap = ->
   # YOUR CODE HERE
   # Set waiting to false (game has started)
   # Set bunnySpeed to negative FLAP_POWER to go up
-
-
+  waiting = false
+  bunnySpeed = -FLAP_POWER
 # ============================================================
 # CHALLENGE 6: Keep bunny on screen!
-# ============================================================
+# ==========================================================
 # Stop the bunny at the ceiling, end game at the ground
-
+   
 checkCeiling = ->
   # YOUR CODE HERE
   # If bunnyY is less than BUNNY_SIZE:
