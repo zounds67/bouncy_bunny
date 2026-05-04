@@ -194,8 +194,11 @@ drawWalls = ->
   # YOUR CODE HERE
   # Use a for loop to go through each wall
   # Draw the top wall (brown) and bottom wall (green)
-
-
+  for wall in walls
+    ctx.fillStyle = '#8B4513'
+    ctx.fillRect(wall.x, 0, WALL_WIDTH, wall.topH)
+    ctx.fillStyle = '#228B22'
+    ctx.fillRect(wall.x, wall.botY, WALL_WIDTH, H - wall.botY)
 # ============================================================
 # CHALLENGE 4: Draw the carrots!
 # ============================================================

@@ -220,11 +220,21 @@
   // - Use ctx.fillRect(x, y, width, height)
   // - Top wall starts at y=0
   // - Bottom wall height is: H - 30 - wall.botY
-  drawWalls = function() {};
-
-  // YOUR CODE HERE
-  // Use a for loop to go through each wall
-  // Draw the top wall (brown) and bottom wall (green)
+  drawWalls = function() {
+    var j, len, results, wall;
+// YOUR CODE HERE
+// Use a for loop to go through each wall
+// Draw the top wall (brown) and bottom wall (green)
+    results = [];
+    for (j = 0, len = walls.length; j < len; j++) {
+      wall = walls[j];
+      ctx.fillStyle = '#8B4513';
+      ctx.fillRect(wall.x, 0, WALL_WIDTH, wall.topH);
+      ctx.fillStyle = '#228B22';
+      results.push(ctx.fillRect(wall.x, wall.botY, WALL_WIDTH, H - wall.botY));
+    }
+    return results;
+  };
 
   // ============================================================
   // CHALLENGE 4: Draw the carrots!
