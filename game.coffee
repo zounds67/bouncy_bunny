@@ -51,9 +51,11 @@ POWERUP_EVERY = 15
 CARROT_POINTS = 10
 
 # How many coins do you earn per carrot?
-CARROT_COINS = 5
+CARROT_COINS = 30
 
+CARROT_WIDTH = 10
 
+CARROT_HEIGHT = 30
 # ============================================================
 # SKIN COLORS - Change these to any colors you like!
 # ============================================================
@@ -217,6 +219,12 @@ drawWalls = ->
 drawCarrots = ->
   # YOUR CODE HERE
   # Loop through carrots and draw ones that haven't been collected
+
+  for carrot in carrots
+    if carrot.got == false
+      ctx.fillStyle = '#FF8C00'
+      ctx.fillRect(carrot.x, carrot.y, CARROT_WIDTH, CARROT_HEIGHT)
+
 
 
 # ============================================================
@@ -441,6 +449,10 @@ moveWalls = ->
 moveCarrots = ->
   # YOUR CODE HERE
   # Use a for loop to move each carrot left by WALL_SPEED
+  for carrot in carrots
+    carrot.x -= WALL_SPEED
+    
+
 
 movePowerups = ->
   # YOUR CODE HERE
@@ -551,12 +563,14 @@ checkPowerupCollision = ->
 # SPAWNING (don't change this section)
 # ============================================================
 
+
 spawnWall = ->
   topH = 50 + Math.random() * (H - GAP_SIZE - 110)
   botY = topH + GAP_SIZE
   walls.push { x: W, topH: topH, botY: botY, scored: false }
 
-  if Math.random() < 0.6
+  # Choose when to have a carrot appear
+  if Math.random() < 0.075  # Change this to make it less frequent
     carrotY = topH + 20 + Math.random() * (GAP_SIZE - 60)
     carrots.push { x: W + WALL_WIDTH / 2 - 8, y: carrotY, got: false }
 

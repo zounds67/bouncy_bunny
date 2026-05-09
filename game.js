@@ -7,7 +7,7 @@
   // ============================================================
 
   // --- Canvas size (don't change these) ---
-  var BUNNY_SIZE, BUNNY_X, CARROT_COINS, CARROT_POINTS, FLAP_POWER, GAP_SIZE, GRAVITY, H, POWERUP_EVERY, SKINS, SKIN_COST, SPAWN_TIME, W, WALL_SPEED, WALL_WIDTH, applyGravity, bestScore, boxesOverlap, btns, bunnySpeed, bunnyY, canvas, carrots, checkCarrotCollision, checkCeiling, checkGround, checkPowerupCollision, checkWallCollision, coins, ctx, currentSkin, draw, drawBackground, drawBtn, drawBunny, drawCarrots, drawGame, drawHome, drawOver, drawPowerupIndicators, drawPowerups, drawScore, drawShop, drawWalls, flap, frames, gameLoop, gameOver, handleClick, hasAxe, hasWacker, hitBtn, loadData, moveBunny, moveCarrots, movePowerups, moveWalls, onClick, onKey, onTouch, owned, powerups, removeOldStuff, resetGame, saveData, score, screen, setup, spawnWall, update, waiting, walls;
+  var BUNNY_SIZE, BUNNY_X, CARROT_COINS, CARROT_HEIGHT, CARROT_POINTS, CARROT_WIDTH, FLAP_POWER, GAP_SIZE, GRAVITY, H, POWERUP_EVERY, SKINS, SKIN_COST, SPAWN_TIME, W, WALL_SPEED, WALL_WIDTH, applyGravity, bestScore, boxesOverlap, btns, bunnySpeed, bunnyY, canvas, carrots, checkCarrotCollision, checkCeiling, checkGround, checkPowerupCollision, checkWallCollision, coins, ctx, currentSkin, draw, drawBackground, drawBtn, drawBunny, drawCarrots, drawGame, drawHome, drawOver, drawPowerupIndicators, drawPowerups, drawScore, drawShop, drawWalls, flap, frames, gameLoop, gameOver, handleClick, hasAxe, hasWacker, hitBtn, loadData, moveBunny, moveCarrots, movePowerups, moveWalls, onClick, onKey, onTouch, owned, powerups, removeOldStuff, resetGame, saveData, score, screen, setup, spawnWall, update, waiting, walls;
 
   W = 480;
 
@@ -57,7 +57,11 @@
   CARROT_POINTS = 10;
 
   // How many coins do you earn per carrot?
-  CARROT_COINS = 5;
+  CARROT_COINS = 30;
+
+  CARROT_WIDTH = 10;
+
+  CARROT_HEIGHT = 30;
 
   // ============================================================
   // SKIN COLORS - Change these to any colors you like!
@@ -250,10 +254,22 @@
   // - Orange color: '#FF8C00'
   // - Carrots are 16 pixels wide and 24 pixels tall
   // - Use "continue if carrot.got" to skip collected carrots
-  drawCarrots = function() {};
-
-  // YOUR CODE HERE
-  // Loop through carrots and draw ones that haven't been collected
+  drawCarrots = function() {
+    var carrot, j, len, results;
+// YOUR CODE HERE
+// Loop through carrots and draw ones that haven't been collected
+    results = [];
+    for (j = 0, len = carrots.length; j < len; j++) {
+      carrot = carrots[j];
+      if (carrot.got === false) {
+        ctx.fillStyle = '#FF8C00';
+        results.push(ctx.fillRect(carrot.x, carrot.y, CARROT_WIDTH, CARROT_HEIGHT));
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  };
 
   // ============================================================
   // DRAWING HELPERS (don't change these)
@@ -499,10 +515,18 @@
     return results;
   };
 
-  moveCarrots = function() {};
+  moveCarrots = function() {
+    var carrot, j, len, results;
+// YOUR CODE HERE
+// Use a for loop to move each carrot left by WALL_SPEED
+    results = [];
+    for (j = 0, len = carrots.length; j < len; j++) {
+      carrot = carrots[j];
+      results.push(carrot.x -= WALL_SPEED);
+    }
+    return results;
+  };
 
-  // YOUR CODE HERE
-  // Use a for loop to move each carrot left by WALL_SPEED
   movePowerups = function() {};
 
   // YOUR CODE HERE
@@ -630,7 +654,8 @@
       botY: botY,
       scored: false
     });
-    if (Math.random() < 0.6) {
+    // Choose when to have a carrot appear
+    if (Math.random() < 0.075) { // Change this to make it less frequent
       carrotY = topH + 20 + Math.random() * (GAP_SIZE - 60);
       carrots.push({
         x: W + WALL_WIDTH / 2 - 8,
