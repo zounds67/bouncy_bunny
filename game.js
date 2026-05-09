@@ -655,7 +655,7 @@
       scored: false
     });
     // Choose when to have a carrot appear
-    if (Math.random() < 0.075) { // Change this to make it less frequent
+    if (Math.random() < 0.1) { // Change this to make it less frequent
       carrotY = topH + 20 + Math.random() * (GAP_SIZE - 60);
       carrots.push({
         x: W + WALL_WIDTH / 2 - 8,
