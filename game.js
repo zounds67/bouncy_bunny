@@ -471,16 +471,34 @@
   // ============================================================
   // Move walls, carrots and powerups toward the bunny
   // Give points when bunny flies past a wall
-  moveWalls = function() {};
+  moveWalls = function() {
+    var j, len, results, wall;
+// YOUR CODE HERE
+// Use a for loop to go through each wall:
+//   - Subtract WALL_SPEED from wall.x to move it left
+//   - If wall hasn't been scored yet AND bunny passed it:
+//     - Set wall.scored to true
+//     - Add 1 to score
 
-  // YOUR CODE HERE
-  // Use a for loop to go through each wall:
-  //   - Subtract WALL_SPEED from wall.x to move it left
-  //   - If wall hasn't been scored yet AND bunny passed it:
-  //     - Set wall.scored to true
-  //     - Add 1 to score
+// HINT: Bunny passes a wall when wall.x + WALL_WIDTH < BUNNY_X
+    results = [];
+    for (j = 0, len = walls.length; j < len; j++) {
+      wall = walls[j];
+      wall.x -= WALL_SPEED;
+      if ((wall.x + WALL_WIDTH < BUNNY_X) && wall.scored === false) {
+        wall.scored = true;
+        if (wall.scored === true) {
+          results.push(score += 1);
+        } else {
+          results.push(void 0);
+        }
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  };
 
-  // HINT: Bunny passes a wall when wall.x + WALL_WIDTH < BUNNY_X
   moveCarrots = function() {};
 
   // YOUR CODE HERE
@@ -531,14 +549,25 @@
   //   - Position: wall.x, wall.botY
   //   - Size: WALL_WIDTH, H - wall.botY
   checkWallCollision = function() {
-    var bunnyBoxSize, bunnyLeft, bunnyTop;
+    var bunnyBoxSize, bunnyLeft, bunnyTop, j, len, wall;
     // Calculate bunny's hitbox
     bunnyLeft = BUNNY_X - BUNNY_SIZE;
     bunnyTop = bunnyY - BUNNY_SIZE;
-    return bunnyBoxSize = BUNNY_SIZE * 2;
+    bunnyBoxSize = BUNNY_SIZE * 2;
+    for (j = 0, len = walls.length; j < len; j++) {
+      wall = walls[j];
+      if (boxesOverlap(BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE, wall.x, 0, WALL_WIDTH, wall.topH)) {
+        gameOver();
+        return;
+      }
+      if (boxesOverlap(BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE, wall.x, wall.botY, WALL_WIDTH, H - wall.botY)) {
+        gameOver();
+        return;
+      }
+    }
   };
 
-  // YOUR CODE HERE
+  
   // For each wall:
   //   - Check if bunny overlaps with top wall using boxesOverlap
   //   - If hit: use axe to destroy wall (set wall.topH = 0) or gameOver

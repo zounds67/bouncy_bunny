@@ -432,7 +432,12 @@ moveWalls = ->
   #     - Add 1 to score
   #
   # HINT: Bunny passes a wall when wall.x + WALL_WIDTH < BUNNY_X
-
+  for wall in walls
+    wall.x -= WALL_SPEED
+    if (wall.x + WALL_WIDTH < BUNNY_X) and wall.scored == false
+      wall.scored = true
+      if wall.scored == true
+        score += 1
 moveCarrots = ->
   # YOUR CODE HERE
   # Use a for loop to move each carrot left by WALL_SPEED
@@ -483,7 +488,15 @@ checkWallCollision = ->
   bunnyTop = bunnyY - BUNNY_SIZE
   bunnyBoxSize = BUNNY_SIZE * 2
 
-  # YOUR CODE HERE
+  for wall in walls
+    if boxesOverlap(BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE, 
+                    wall.x, 0, WALL_WIDTH, wall.topH)  
+      gameOver()
+      return                                        
+    if boxesOverlap(BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE, 
+                    wall.x, wall.botY, WALL_WIDTH, H - wall.botY)  
+      gameOver()
+      return                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
   # For each wall:
   #   - Check if bunny overlaps with top wall using boxesOverlap
   #   - If hit: use axe to destroy wall (set wall.topH = 0) or gameOver
