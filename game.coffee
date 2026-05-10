@@ -51,7 +51,7 @@ POWERUP_EVERY = 15
 CARROT_POINTS = 10
 
 # How many coins do you earn per carrot?
-CARROT_COINS = 30
+CARROT_COINS = 3
 
 CARROT_WIDTH = 10
 
@@ -524,7 +524,7 @@ checkWallCollision = ->
 # ============================================================
 # Check if bunny touches a carrot and collect it
 #
-# Carrot hitbox: carrot.x, carrot.y, width 16, height 24
+# Carrot hitbox: carrot.x, carrot.y, , 
 
 checkCarrotCollision = ->
   bunnyLeft = BUNNY_X - BUNNY_SIZE
@@ -536,15 +536,23 @@ checkCarrotCollision = ->
   #   - Skip if carrot.got is true (already collected)
   #   - Check if bunny overlaps with carrot using boxesOverlap
   #   - If touching: set carrot.got to true, add points and coins
+  for carrot in carrots
+    if carrot.got == false
+      if boxesOverlap(carrot.x, carrot.y, CARROT_WIDTH, CARROT_HEIGHT,
+                      BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE)
+        carrot.got = true
+        score += CARROT_POINTS
+        coins += CARROT_COINS
+        
 
 
 # ============================================================
 # CHALLENGE 10: Collect powerups!
 # ============================================================
 # Check if bunny touches a powerup and give it to them
-#
+
 # Powerup hitbox: powerup.x, powerup.y, width 30, height 30
-# If powerup.type is 'axe', set hasAxe to true
+# If powerup.type is 'axe', set hasAxe to true, 
 # Otherwise set hasWacker to true
 
 checkPowerupCollision = ->
