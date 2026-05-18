@@ -63,10 +63,11 @@ CARROT_HEIGHT = 30
 SKINS = [
   { name: 'White',  color: '#FFFFFF' }
   { name: 'Grey',   color: '#AAAAAA' }
-  { name: 'Gold',   color: '#FFD700' }
   { name: 'Pink',   color: '#FFB6C1' }
-  { name: 'Blue',   color: '#6699FF' }
+  { name: 'Blue',   color: '#6699FF' }  
   { name: 'Red',    color: '#FF6666' }
+  { name: 'Gold',   color: '#FFD700' }
+
 ]
 SKIN_COST = [0, 30, 50, 70, 100, 150]
 
@@ -418,12 +419,18 @@ checkCeiling = ->
   # If bunnyY is less than BUNNY_SIZE:
   #   - Set bunnyY to BUNNY_SIZE (keep on screen)
   #   - Set bunnySpeed to 0 (stop moving)
+  if bunnyY < 0
+    gameOver()
+  return
+
 
 checkGround = ->
   # YOUR CODE HERE
   # If bunnyY is greater than (H - 30 - BUNNY_SIZE):
   #   - Call gameOver()
-
+  if bunnyY > H - 30 - BUNNY_SIZE
+    gameOver()
+  return
 
 # ============================================================
 # CHALLENGE 7: Move everything left!
@@ -457,6 +464,8 @@ moveCarrots = ->
 movePowerups = ->
   # YOUR CODE HERE
   # Use a for loop to move each powerup left by WALL_SPEED
+  for powerup in powerups
+    powerup.x -= WALL_SPEED
 
 removeOldStuff = ->
   # Remove walls, carrots, and powerups that went off the left side
@@ -502,13 +511,20 @@ checkWallCollision = ->
 
   for wall in walls
     if boxesOverlap(BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE, 
-                    wall.x, 0, WALL_WIDTH, wall.topH)  
-      gameOver()
-      return                                        
+                    wall.x, 0, WALL_WIDTH, wall.topH)
+      if hasAxe == false
+        gameOver()
+      else
+        wall.topH = 0
+        hasAxe = false
     if boxesOverlap(BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE, 
-                    wall.x, wall.botY, WALL_WIDTH, H - wall.botY)  
-      gameOver()
-      return                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                    wall.x, wall.botY, WALL_WIDTH, H - wall.botY)
+      if hasWacker == false
+        gameOver()
+      else
+        wall.botY = H
+        hasWacker = false
+    return                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
   # For each wall:
   #   - Check if bunny overlaps with top wall using boxesOverlap
   #   - If hit: use axe to destroy wall (set wall.topH = 0) or gameOver
@@ -560,9 +576,19 @@ checkPowerupCollision = ->
   bunnyTop = bunnyY - BUNNY_SIZE
   bunnyBoxSize = BUNNY_SIZE * 2
 
+  for powerup in powerups
+    if powerup.got == false
+      if boxesOverlap(powerup.x, powerup.y, 30, 30,
+                      BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE)
+          powerup.got = true
+          if powerup.type == 'axe'
+            hasAxe = true
+          if powerup.type == 'wacker'
+            hasWacker = true
   # YOUR CODE HERE
   # For each powerup:
-  #   - Skip if powerup.got is true
+
+
   #   - Check if bunny overlaps with powerup
   #   - If touching: set powerup.got to true, give the right powerup
 

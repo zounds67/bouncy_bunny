@@ -57,7 +57,9 @@
   CARROT_POINTS = 10;
 
   // How many coins do you earn per carrot?
-  CARROT_COINS = CARROT_WIDTH = 10;
+  CARROT_COINS = 3;
+
+  CARROT_WIDTH = 10;
 
   CARROT_HEIGHT = 30;
 
@@ -74,10 +76,6 @@
       color: '#AAAAAA'
     },
     {
-      name: 'Gold',
-      color: '#FFD700'
-    },
-    {
       name: 'Pink',
       color: '#FFB6C1'
     },
@@ -88,6 +86,10 @@
     {
       name: 'Red',
       color: '#FF6666'
+    },
+    {
+      name: 'Gold',
+      color: '#FFD700'
     }
   ];
 
@@ -468,17 +470,24 @@
   // CHALLENGE 6: Keep bunny on screen!
   // ==========================================================
   // Stop the bunny at the ceiling, end game at the ground
-  checkCeiling = function() {};
+  checkCeiling = function() {
+    // YOUR CODE HERE
+    // If bunnyY is less than BUNNY_SIZE:
+    //   - Set bunnyY to BUNNY_SIZE (keep on screen)
+    //   - Set bunnySpeed to 0 (stop moving)
+    if (bunnyY < 0) {
+      gameOver();
+    }
+  };
 
-  // YOUR CODE HERE
-  // If bunnyY is less than BUNNY_SIZE:
-  //   - Set bunnyY to BUNNY_SIZE (keep on screen)
-  //   - Set bunnySpeed to 0 (stop moving)
-  checkGround = function() {};
-
-  // YOUR CODE HERE
-  // If bunnyY is greater than (H - 30 - BUNNY_SIZE):
-  //   - Call gameOver()
+  checkGround = function() {
+    // YOUR CODE HERE
+    // If bunnyY is greater than (H - 30 - BUNNY_SIZE):
+    //   - Call gameOver()
+    if (bunnyY > H - 30 - BUNNY_SIZE) {
+      gameOver();
+    }
+  };
 
   // ============================================================
   // CHALLENGE 7: Move everything left!
@@ -525,10 +534,18 @@
     return results;
   };
 
-  movePowerups = function() {};
+  movePowerups = function() {
+    var j, len, powerup, results;
+// YOUR CODE HERE
+// Use a for loop to move each powerup left by WALL_SPEED
+    results = [];
+    for (j = 0, len = powerups.length; j < len; j++) {
+      powerup = powerups[j];
+      results.push(powerup.x -= WALL_SPEED);
+    }
+    return results;
+  };
 
-  // YOUR CODE HERE
-  // Use a for loop to move each powerup left by WALL_SPEED
   removeOldStuff = function() {
     // Remove walls, carrots, and powerups that went off the left side
     walls = walls.filter(function(w) {
@@ -579,13 +596,22 @@
     for (j = 0, len = walls.length; j < len; j++) {
       wall = walls[j];
       if (boxesOverlap(BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE, wall.x, 0, WALL_WIDTH, wall.topH)) {
-        gameOver();
-        return;
+        if (hasAxe === false) {
+          gameOver();
+        } else {
+          wall.topH = 0;
+          hasAxe = false;
+        }
       }
       if (boxesOverlap(BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE, wall.x, wall.botY, WALL_WIDTH, H - wall.botY)) {
-        gameOver();
-        return;
+        if (hasWacker === false) {
+          gameOver();
+        } else {
+          wall.botY = H;
+          hasWacker = false;
+        }
       }
+      return;
     }
   };
 
@@ -643,15 +669,37 @@
   // If powerup.type is 'axe', set hasAxe to true, 
   // Otherwise set hasWacker to true
   checkPowerupCollision = function() {
-    var bunnyBoxSize, bunnyLeft, bunnyTop;
+    var bunnyBoxSize, bunnyLeft, bunnyTop, j, len, powerup, results;
     bunnyLeft = BUNNY_X - BUNNY_SIZE;
     bunnyTop = bunnyY - BUNNY_SIZE;
-    return bunnyBoxSize = BUNNY_SIZE * 2;
+    bunnyBoxSize = BUNNY_SIZE * 2;
+    results = [];
+    for (j = 0, len = powerups.length; j < len; j++) {
+      powerup = powerups[j];
+      if (powerup.got === false) {
+        if (boxesOverlap(powerup.x, powerup.y, 30, 30, BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE)) {
+          powerup.got = true;
+          if (powerup.type === 'axe') {
+            hasAxe = true;
+          }
+          if (powerup.type === 'wacker') {
+            results.push(hasWacker = true);
+          } else {
+            results.push(void 0);
+          }
+        } else {
+          results.push(void 0);
+        }
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
   };
 
   // YOUR CODE HERE
   // For each powerup:
-  //   - Skip if powerup.got is true
+
   //   - Check if bunny overlaps with powerup
   //   - If touching: set powerup.got to true, give the right powerup
 
