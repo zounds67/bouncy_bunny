@@ -60,17 +60,82 @@ CARROT_HEIGHT = 30
 # SKIN COLORS - Change these to any colors you like!
 # ============================================================
 
+# ============================================================
+# BUILT-IN CHARACTER DRAWING FUNCTIONS
+# ============================================================
+
+# Pokeball - drawn with canvas shapes (clean circle is better than pixel art)
+drawPokeball = (cx, cy, size = 40) ->
+  r = size / 2 - 1
+
+  # Top half (red) 
+  ctx.fillStyle = '#EE1515'
+  ctx.beginPath()
+  ctx.arc cx, cy, r, Math.PI, 0
+  ctx.fill()
+
+  # Bottom half (white)
+  ctx.fillStyle = '#FFFFFF'
+  ctx.beginPath()
+  ctx.arc cx, cy, r, 0, Math.PI
+  ctx.fill()
+
+  # Black outline
+  ctx.strokeStyle = 'black'
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.arc cx, cy, r, 0, Math.PI * 2
+  ctx.stroke()
+
+  # Horizontal black band
+  ctx.beginPath()
+  ctx.stroke()
+
+  # Center button (white circle with black outline)
+  ctx.fillStyle = '#FFFFFF'
+  ctx.beginPath()
+  ctx.arc cx, cy, r * 0.25, 0, Math.PI * 2
+  ctx.fill()
+  ctx.stroke()
+
+  # Inner button dot
+  ctx.fillStyle = 'black'
+  ctx.beginPath()
+  ctx.arc cx, cy, r * 0.1, 0, Math.PI * 2
+  ctx.fill()
+
+
+# Pacman - yellow circle with a wedge mouth
+drawPacman = (cx, cy, size = 40) ->
+  r = size / 2 - 1
+
+  # Yellow body with mouth wedge cut out
+  # The mouth opens to the right (between angles 0.2*PI and -0.2*PI)
+  ctx.fillStyle = '#FFD700'
+  ctx.beginPath()
+  ctx.moveTo cx, cy
+  ctx.arc cx, cy, r, 0.2 * Math.PI, -0.2 * Math.PI
+  ctx.closePath()
+  ctx.fill()
+
+  # Black outline
+  ctx.strokeStyle = 'black'
+  ctx.lineWidth = 2
+  ctx.stroke()
+
+  # Eye (small black dot in the upper part)
+  ctx.fillStyle = 'black'
+  ctx.beginPath()
+  ctx.arc cx, cy - r * 0.5, r * 0.13, 0, Math.PI * 2
+  ctx.fill()
+
+
 SKINS = [
-  { name: 'White',  color: '#FFFFFF' }
-  { name: 'Grey',   color: '#AAAAAA' }
-  { name: 'Pink',   color: '#FFB6C1' }
-  { name: 'Blue',   color: '#6699FF' }  
-  { name: 'Red',    color: '#FF6666' }
-  { name: 'Gold',   color: '#FFD700' }
-
+  { name: 'Bunny',    color: '#FFFFFF' }
+  { name: 'Pokeball', color: '#EE1515', draw: drawPokeball }
+  { name: 'Pacman',   color: '#FFD700', draw: drawPacman }
 ]
-SKIN_COST = [0, 30, 50, 70, 100, 150]
-
+SKIN_COST = [0, 50, 75]
 
 # ============================================================
 # GAME VARIABLES (don't change this section)
