@@ -57,7 +57,7 @@
   CARROT_POINTS = 10;
 
   // How many coins do you earn per carrot?
-  CARROT_COINS = 3000;
+  CARROT_COINS = 3;
 
   CARROT_WIDTH = 10;
 
