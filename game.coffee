@@ -139,22 +139,23 @@ drawPacman = (cx, cy, size = 40) ->
 
 
 SKINS = [
-  { name: 'Bunny',    color: '#FFFFFF' }
+  { name: 'circle',    color: '#FFFFFF' }
   { name: 'Pokeball', color: '#EE1515', draw: drawPokeball }
   { name: 'Pacman',   color: '#FFD700', draw: drawPacman }
 ]
-SKIN_COST = [0, 50, 75]
+SKIN_COST = [0, 25, 75]
 
 SKIN_FILES = [
-  { name: 'Bulbasaur', file: 'skins/bulbasaur.css', cost: 100 }
-  { name: 'Yoshi Egg', file: 'skins/yoshi-egg.css', cost: 125 }
-  { name: 'Meltan',    file: 'skins/meltan.css',    cost: 150 }
-  { name: 'Charizard', file: 'skins/charizard.css', cost: 175 }
-  { name: 'Ditto',     file: 'skins/ditto.css',     cost: 200 }
-  { name: 'BoxerDude', file: 'skins/boxer-dude.css', cost: 225 }
-  { name: 'Mushroom',  file: 'skins/mushroom.css',  cost: 250 }
-  { name: 'Goomba',    file: 'skins/goomba.css',    cost: 275 }
-  { name: 'Hammer',    file: 'skins/hammer.css',    cost: 110}
+  {name: 'bunny',      file: 'skins/bunny.css',      cost: 0 }
+  { name: 'Mushroom',  file: 'skins/mushroom.css',   cost: 100 }
+  { name: 'Yoshi Egg', file: 'skins/yoshi-egg.css',  cost: 100 }
+  { name: 'Hammer',    file: 'skins/hammer.css',     cost: 100}
+  { name: 'BoxerDude', file: 'skins/boxer-dude.css', cost: 135 }
+  { name: 'Charizard', file: 'skins/charizard.css',  cost: 175 }
+  { name: 'Goomba',    file: 'skins/goomba.css',     cost: 185 }
+  { name: 'Ditto',     file: 'skins/ditto.css',      cost: 200 }
+  { name: 'Meltan',    file: 'skins/meltan.css',     cost: 250 }
+  { name: 'Bulbasaur', file: 'skins/bulbasaur.css',  cost: 300 }
 ]
 
 # Parse pixelart-to-css.com CSS into a grid of colors

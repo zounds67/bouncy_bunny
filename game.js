@@ -138,7 +138,7 @@
 
   SKINS = [
     {
-      name: 'Bunny',
+      name: 'circle',
       color: '#FFFFFF'
     },
     {
@@ -153,23 +153,33 @@
     }
   ];
 
-  SKIN_COST = [0, 50, 75];
+  SKIN_COST = [0, 25, 75];
 
   SKIN_FILES = [
     {
-      name: 'Bulbasaur',
-      file: 'skins/bulbasaur.css',
+      name: 'bunny',
+      file: 'skins/bunny.css',
+      cost: 0
+    },
+    {
+      name: 'Mushroom',
+      file: 'skins/mushroom.css',
       cost: 100
     },
     {
       name: 'Yoshi Egg',
       file: 'skins/yoshi-egg.css',
-      cost: 125
+      cost: 100
     },
     {
-      name: 'Meltan',
-      file: 'skins/meltan.css',
-      cost: 150
+      name: 'Hammer',
+      file: 'skins/hammer.css',
+      cost: 100
+    },
+    {
+      name: 'BoxerDude',
+      file: 'skins/boxer-dude.css',
+      cost: 135
     },
     {
       name: 'Charizard',
@@ -177,29 +187,24 @@
       cost: 175
     },
     {
+      name: 'Goomba',
+      file: 'skins/goomba.css',
+      cost: 185
+    },
+    {
       name: 'Ditto',
       file: 'skins/ditto.css',
       cost: 200
     },
     {
-      name: 'BoxerDude',
-      file: 'skins/boxer-dude.css',
-      cost: 225
-    },
-    {
-      name: 'Mushroom',
-      file: 'skins/mushroom.css',
+      name: 'Meltan',
+      file: 'skins/meltan.css',
       cost: 250
     },
     {
-      name: 'Goomba',
-      file: 'skins/goomba.css',
-      cost: 275
-    },
-    {
-      name: 'Hammer',
-      file: 'skins/hammer.css',
-      cost: 110
+      name: 'Bulbasaur',
+      file: 'skins/bulbasaur.css',
+      cost: 300
     }
   ];
 
