@@ -7,7 +7,7 @@
   // ============================================================
 
   // --- Canvas size (don't change these) ---
-  var BUNNY_SIZE, BUNNY_X, CARROT_COINS, CARROT_HEIGHT, CARROT_POINTS, CARROT_WIDTH, FLAP_POWER, GAP_SIZE, GRAVITY, H, POWERUP_EVERY, SKINS, SKIN_COST, SPAWN_TIME, W, WALL_SPEED, WALL_WIDTH, applyGravity, bestScore, boxesOverlap, btns, bunnySpeed, bunnyY, canvas, carrots, checkCarrotCollision, checkCeiling, checkGround, checkPowerupCollision, checkWallCollision, coins, ctx, currentSkin, draw, drawBackground, drawBtn, drawBunny, drawCarrots, drawGame, drawHome, drawOver, drawPowerupIndicators, drawPowerups, drawScore, drawShop, drawWalls, flap, frames, gameLoop, gameOver, handleClick, hasAxe, hasWacker, hitBtn, loadData, moveBunny, moveCarrots, movePowerups, moveWalls, onClick, onKey, onTouch, owned, powerups, removeOldStuff, resetGame, saveData, score, screen, setup, spawnWall, update, waiting, walls;
+  var BUNNY_SIZE, BUNNY_X, CARROT_COINS, CARROT_HEIGHT, CARROT_POINTS, CARROT_WIDTH, FLAP_POWER, GAP_SIZE, GRAVITY, H, POWERUP_EVERY, SKINS, SKIN_COST, SKIN_FILES, SPAWN_TIME, W, WALL_SPEED, WALL_WIDTH, applyGravity, bestScore, boxesOverlap, btns, bunnySpeed, bunnyY, canvas, carrots, checkCarrotCollision, checkCeiling, checkGround, checkPowerupCollision, checkWallCollision, coins, ctx, currentSkin, draw, drawBackground, drawBtn, drawBunny, drawCarrots, drawCssPixelArt, drawGame, drawHome, drawOver, drawPacman, drawPokeball, drawPowerupIndicators, drawPowerups, drawScore, drawShop, drawWalls, flap, frames, gameLoop, gameOver, handleClick, hasAxe, hasWacker, hitBtn, loadAllSkins, loadData, moveBunny, moveCarrots, movePowerups, moveWalls, onClick, onKey, onTouch, owned, parseCssPixelArt, powerups, removeOldStuff, resetGame, saveData, score, screen, setup, spawnWall, update, waiting, walls;
 
   W = 480;
 
@@ -66,34 +66,242 @@
   // ============================================================
   // SKIN COLORS - Change these to any colors you like!
   // ============================================================
+
+  // ============================================================
+  // BUILT-IN CHARACTER DRAWING FUNCTIONS
+  // ============================================================
+
+  // ============================================================
+  // CSS PIXEL ART LOADER
+  // Drop .css files from pixelart-to-css.com in the skins/ folder,
+  // then add a line to SKIN_FILES below to use them!
+  // ============================================================
+
+  // Pokeball - drawn with canvas shapes (clean circle is better than pixel art)
+  drawPokeball = function(cx, cy, size = 40) {
+    var r;
+    r = size / 2 - 1;
+    // Top half (red) 
+    ctx.fillStyle = '#EE1515';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, Math.PI, 0);
+    ctx.fill();
+    // Bottom half (white)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI);
+    ctx.fill();
+    // Black outline
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.stroke();
+    // Horizontal black band
+    ctx.beginPath();
+    ctx.stroke();
+    // Center button (white circle with black outline)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.25, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // Inner button dot
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.1, 0, Math.PI * 2);
+    return ctx.fill();
+  };
+
+  // Pacman - yellow circle with a wedge mouth
+  drawPacman = function(cx, cy, size = 40) {
+    var r;
+    r = size / 2 - 1;
+    // Yellow body with mouth wedge cut out
+    // The mouth opens to the right (between angles 0.2*PI and -0.2*PI)
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, 0.2 * Math.PI, -0.2 * Math.PI);
+    ctx.closePath();
+    ctx.fill();
+    // Black outline
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // Eye (small black dot in the upper part)
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+    ctx.arc(cx, cy - r * 0.5, r * 0.13, 0, Math.PI * 2);
+    return ctx.fill();
+  };
+
   SKINS = [
     {
-      name: 'White',
+      name: 'Bunny',
       color: '#FFFFFF'
     },
     {
-      name: 'Grey',
-      color: '#AAAAAA'
+      name: 'Pokeball',
+      color: '#EE1515',
+      draw: drawPokeball
     },
     {
-      name: 'Pink',
-      color: '#FFB6C1'
-    },
-    {
-      name: 'Blue',
-      color: '#6699FF'
-    },
-    {
-      name: 'Red',
-      color: '#FF6666'
-    },
-    {
-      name: 'Gold',
-      color: '#FFD700'
+      name: 'Pacman',
+      color: '#FFD700',
+      draw: drawPacman
     }
   ];
 
-  SKIN_COST = [0, 30, 50, 70, 100, 150];
+  SKIN_COST = [0, 50, 75];
+
+  SKIN_FILES = [
+    {
+      name: 'Bulbasaur',
+      file: 'skins/bulbasaur.css',
+      cost: 100
+    },
+    {
+      name: 'Yoshi Egg',
+      file: 'skins/yoshi-egg.css',
+      cost: 125
+    },
+    {
+      name: 'Meltan',
+      file: 'skins/meltan.css',
+      cost: 150
+    },
+    {
+      name: 'Charizard',
+      file: 'skins/charizard.css',
+      cost: 175
+    },
+    {
+      name: 'Ditto',
+      file: 'skins/ditto.css',
+      cost: 200
+    },
+    {
+      name: 'BoxerDude',
+      file: 'skins/boxer-dude.css',
+      cost: 225
+    },
+    {
+      name: 'Mushroom',
+      file: 'skins/mushroom.css',
+      cost: 250
+    },
+    {
+      name: 'Goomba',
+      file: 'skins/goomba.css',
+      cost: 275
+    }
+  ];
+
+  // Parse pixelart-to-css.com CSS into a grid of colors
+  parseCssPixelArt = function(cssText) {
+    var b, c, cellSize, cols, g, grid, j, k, match, maxX, maxY, minX, minY, pattern, pixels, r, ref, ref1, ref2, row, rows, x, y;
+    cellSize = parseInt(((ref = cssText.match(/width:\s*(\d+)px/)) != null ? ref[1] : void 0) || '13');
+    pattern = /(\d+)px\s+(\d+)px\s+0\s+0\s+rgba?\(([^)]+)\)/g;
+    pixels = {};
+    minX = minY = 2e308;
+    maxX = maxY = -2e308;
+    while ((match = pattern.exec(cssText))) {
+      x = parseInt(match[1]);
+      y = parseInt(match[2]);
+      [r, g, b] = match[3].split(',').slice(0, 3).map(function(s) {
+        return parseInt(s.trim());
+      });
+      pixels[`${x},${y}`] = `rgb(${r},${g},${b})`;
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+    cols = (maxX - minX) / cellSize + 1;
+    rows = (maxY - minY) / cellSize + 1;
+    grid = [];
+    for (r = j = 0, ref1 = rows; (0 <= ref1 ? j < ref1 : j > ref1); r = 0 <= ref1 ? ++j : --j) {
+      row = [];
+      for (c = k = 0, ref2 = cols; (0 <= ref2 ? k < ref2 : k > ref2); c = 0 <= ref2 ? ++k : --k) {
+        row.push(pixels[`${minX + c * cellSize},${minY + r * cellSize}`] || null);
+      }
+      grid.push(row);
+    }
+    return {grid, cols, rows};
+  };
+
+  // Draw a parsed pixel art grid centered at (cx, cy)
+  drawCssPixelArt = function(cx, cy, size, data) {
+    var c, color, j, maxDim, pixelSize, r, ref, results1, startX, startY;
+    if (!data) {
+      return;
+    }
+    maxDim = Math.max(data.rows, data.cols);
+    pixelSize = size / maxDim;
+    startX = cx - (data.cols * pixelSize) / 2;
+    startY = cy - (data.rows * pixelSize) / 2;
+    results1 = [];
+    for (r = j = 0, ref = data.rows; (0 <= ref ? j < ref : j > ref); r = 0 <= ref ? ++j : --j) {
+      results1.push((function() {
+        var k, ref1, results2;
+        results2 = [];
+        for (c = k = 0, ref1 = data.cols; (0 <= ref1 ? k < ref1 : k > ref1); c = 0 <= ref1 ? ++k : --k) {
+          color = data.grid[r][c];
+          if (!color) {
+            continue;
+          }
+          ctx.fillStyle = color;
+          results2.push(ctx.fillRect(startX + c * pixelSize, startY + r * pixelSize, pixelSize + 0.5, pixelSize + 0.5));
+        }
+        return results2;
+      })());
+    }
+    return results1;
+  };
+
+  // Load all CSS skin files, then call onDone
+  loadAllSkins = function(onDone) {
+    var promises;
+    if (SKIN_FILES.length === 0) {
+      return onDone();
+    }
+    promises = SKIN_FILES.map(function(skinDef) {
+      return fetch(skinDef.file).then(function(r) {
+        return r.text();
+      }).then(function(css) {
+        return {
+          skinDef,
+          data: parseCssPixelArt(css)
+        };
+      }).catch(function(err) {
+        console.error(`Failed to load ${skinDef.file}:`, err);
+        return null;
+      });
+    });
+    return Promise.all(promises).then(function(results) {
+      var j, len, result;
+      for (j = 0, len = results.length; j < len; j++) {
+        result = results[j];
+        if (result) {
+          (function(result) {
+            SKINS.push({
+              name: result.skinDef.name,
+              color: '#FFFFFF',
+              draw: function(cx, cy, size = 40) {
+                return drawCssPixelArt(cx, cy, size, result.data);
+              }
+            });
+            return SKIN_COST.push(result.skinDef.cost);
+          })(result);
+        }
+      }
+      while (owned.length < SKINS.length) {
+        owned.push(false);
+      }
+      return onDone();
+    });
+  };
 
   // ============================================================
   // GAME VARIABLES (don't change this section)
@@ -146,7 +354,11 @@
       passive: false
     });
     document.addEventListener('keydown', onKey);
-    return gameLoop();
+    // Load CSS skins, then start the game
+    // This is a bit complicated - but it helps things load faster.
+    return loadAllSkins(function() {
+      return gameLoop();
+    });
   };
 
   // ============================================================
@@ -225,19 +437,19 @@
   // - Top wall starts at y=0
   // - Bottom wall height is: H - 30 - wall.botY
   drawWalls = function() {
-    var j, len, results, wall;
+    var j, len, results1, wall;
 // YOUR CODE HERE
 // Use a for loop to go through each wall
 // Draw the top wall (brown) and bottom wall (green)
-    results = [];
+    results1 = [];
     for (j = 0, len = walls.length; j < len; j++) {
       wall = walls[j];
       ctx.fillStyle = '#8B4513';
       ctx.fillRect(wall.x, 0, WALL_WIDTH, wall.topH);
       ctx.fillStyle = '#228B22';
-      results.push(ctx.fillRect(wall.x, wall.botY, WALL_WIDTH, H - wall.botY));
+      results1.push(ctx.fillRect(wall.x, wall.botY, WALL_WIDTH, H - wall.botY));
     }
-    return results;
+    return results1;
   };
 
   // ============================================================
@@ -255,20 +467,20 @@
   // - Carrots are 16 pixels wide and 24 pixels tall
   // - Use "continue if carrot.got" to skip collected carrots
   drawCarrots = function() {
-    var carrot, j, len, results;
+    var carrot, j, len, results1;
 // YOUR CODE HERE
 // Loop through carrots and draw ones that haven't been collected
-    results = [];
+    results1 = [];
     for (j = 0, len = carrots.length; j < len; j++) {
       carrot = carrots[j];
       if (carrot.got === false) {
         ctx.fillStyle = '#FF8C00';
-        results.push(ctx.fillRect(carrot.x, carrot.y, CARROT_WIDTH, CARROT_HEIGHT));
+        results1.push(ctx.fillRect(carrot.x, carrot.y, CARROT_WIDTH, CARROT_HEIGHT));
       } else {
-        results.push(void 0);
+        results1.push(void 0);
       }
     }
-    return results;
+    return results1;
   };
 
   // ============================================================
@@ -282,8 +494,8 @@
   };
 
   drawPowerups = function() {
-    var j, len, powerup, results;
-    results = [];
+    var j, len, powerup, results1;
+    results1 = [];
     for (j = 0, len = powerups.length; j < len; j++) {
       powerup = powerups[j];
       if (powerup.got) {
@@ -296,9 +508,9 @@
       ctx.fillStyle = 'white';
       ctx.font = 'bold 14px Arial';
       ctx.textAlign = 'center';
-      results.push(ctx.fillText((powerup.type === 'axe' ? 'A' : 'W'), powerup.x + 15, powerup.y + 20));
+      results1.push(ctx.fillText((powerup.type === 'axe' ? 'A' : 'W'), powerup.x + 15, powerup.y + 20));
     }
-    return results;
+    return results1;
   };
 
   drawScore = function() {
@@ -395,7 +607,7 @@
   };
 
   drawShop = function() {
-    var btnColor, cardY, i, j, ref;
+    var btnColor, cardW, cardX, cardY, col, i, j, ref, row;
     drawBackground();
     ctx.fillStyle = 'rgba(255,255,255,0.9)';
     ctx.fillRect(20, 20, W - 40, H - 40);
@@ -406,29 +618,38 @@
     ctx.font = '16px Arial';
     ctx.fillText('Coins: ' + coins, W / 2, 80);
     for (i = j = 0, ref = SKINS.length; (0 <= ref ? j < ref : j > ref); i = 0 <= ref ? ++j : --j) {
-      cardY = 100 + i * 75;
+      col = i % 2;
+      row = Math.floor(i / 2);
+      cardX = 30 + col * 215;
+      cardY = 100 + row * 75;
+      cardW = 200;
       ctx.fillStyle = i === currentSkin ? '#E0FFE0' : '#F0F0F0';
-      ctx.fillRect(40, cardY, W - 80, 65);
-      ctx.fillStyle = SKINS[i].color;
-      ctx.beginPath();
-      ctx.arc(80, cardY + 32, 18, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      ctx.fillRect(cardX, cardY, cardW, 65);
+      // Draw character preview - use draw function if available
+      if (SKINS[i].draw) {
+        SKINS[i].draw(cardX + 25, cardY + 32, 32);
+      } else {
+        ctx.fillStyle = SKINS[i].color;
+        ctx.beginPath();
+        ctx.arc(cardX + 25, cardY + 32, 16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
       ctx.fillStyle = '#333';
-      ctx.font = '16px Arial';
+      ctx.font = 'bold 12px Arial';
       ctx.textAlign = 'left';
-      ctx.fillText(SKINS[i].name, 110, cardY + 28);
-      ctx.font = '12px Arial';
-      ctx.fillText((owned[i] ? 'Owned' : SKIN_COST[i] + ' coins'), 110, cardY + 46);
+      ctx.fillText(SKINS[i].name, cardX + 48, cardY + 25);
+      ctx.font = '10px Arial';
+      ctx.fillText((owned[i] ? 'Owned' : SKIN_COST[i] + ' coins'), cardX + 48, cardY + 42);
       if (i === currentSkin) {
-        drawBtn('skin' + i, W - 130, cardY + 18, 70, 30, 'Wearing', '#4CAF50');
+        drawBtn('skin' + i, cardX + 115, cardY + 18, 80, 30, 'Wearing', '#4CAF50');
       } else if (owned[i]) {
-        drawBtn('skin' + i, W - 130, cardY + 18, 70, 30, 'Wear', '#2196F3');
+        drawBtn('skin' + i, cardX + 115, cardY + 18, 80, 30, 'Wear', '#2196F3');
       } else {
         btnColor = coins >= SKIN_COST[i] ? '#FF9800' : '#999';
-        drawBtn('skin' + i, W - 130, cardY + 18, 70, 30, 'Buy', btnColor);
+        drawBtn('skin' + i, cardX + 115, cardY + 18, 80, 30, 'Buy', btnColor);
       }
     }
     return drawBtn('back', W / 2 - 60, H - 70, 120, 40, 'Back', '#666');
@@ -495,7 +716,7 @@
   // Move walls, carrots and powerups toward the bunny
   // Give points when bunny flies past a wall
   moveWalls = function() {
-    var j, len, results, wall;
+    var j, len, results1, wall;
 // YOUR CODE HERE
 // Use a for loop to go through each wall:
 //   - Subtract WALL_SPEED from wall.x to move it left
@@ -504,46 +725,46 @@
 //     - Add 1 to score
 
 // HINT: Bunny passes a wall when wall.x + WALL_WIDTH < BUNNY_X
-    results = [];
+    results1 = [];
     for (j = 0, len = walls.length; j < len; j++) {
       wall = walls[j];
       wall.x -= WALL_SPEED;
       if ((wall.x + WALL_WIDTH < BUNNY_X) && wall.scored === false) {
         wall.scored = true;
         if (wall.scored === true) {
-          results.push(score += 1);
+          results1.push(score += 1);
         } else {
-          results.push(void 0);
+          results1.push(void 0);
         }
       } else {
-        results.push(void 0);
+        results1.push(void 0);
       }
     }
-    return results;
+    return results1;
   };
 
   moveCarrots = function() {
-    var carrot, j, len, results;
+    var carrot, j, len, results1;
 // YOUR CODE HERE
 // Use a for loop to move each carrot left by WALL_SPEED
-    results = [];
+    results1 = [];
     for (j = 0, len = carrots.length; j < len; j++) {
       carrot = carrots[j];
-      results.push(carrot.x -= WALL_SPEED);
+      results1.push(carrot.x -= WALL_SPEED);
     }
-    return results;
+    return results1;
   };
 
   movePowerups = function() {
-    var j, len, powerup, results;
+    var j, len, powerup, results1;
 // YOUR CODE HERE
 // Use a for loop to move each powerup left by WALL_SPEED
-    results = [];
+    results1 = [];
     for (j = 0, len = powerups.length; j < len; j++) {
       powerup = powerups[j];
-      results.push(powerup.x -= WALL_SPEED);
+      results1.push(powerup.x -= WALL_SPEED);
     }
-    return results;
+    return results1;
   };
 
   removeOldStuff = function() {
@@ -632,7 +853,7 @@
 
   // Carrot hitbox: carrot.x, carrot.y, , 
   checkCarrotCollision = function() {
-    var bunnyBoxSize, bunnyLeft, bunnyTop, carrot, j, len, results;
+    var bunnyBoxSize, bunnyLeft, bunnyTop, carrot, j, len, results1;
     bunnyLeft = BUNNY_X - BUNNY_SIZE;
     bunnyTop = bunnyY - BUNNY_SIZE;
     bunnyBoxSize = BUNNY_SIZE * 2;
@@ -641,22 +862,22 @@
 //   - Skip if carrot.got is true (already collected)
 //   - Check if bunny overlaps with carrot using boxesOverlap
 //   - If touching: set carrot.got to true, add points and coins
-    results = [];
+    results1 = [];
     for (j = 0, len = carrots.length; j < len; j++) {
       carrot = carrots[j];
       if (carrot.got === false) {
         if (boxesOverlap(carrot.x, carrot.y, CARROT_WIDTH, CARROT_HEIGHT, BUNNY_X, bunnyY, BUNNY_SIZE, BUNNY_SIZE)) {
           carrot.got = true;
           score += CARROT_POINTS;
-          results.push(coins += CARROT_COINS);
+          results1.push(coins += CARROT_COINS);
         } else {
-          results.push(void 0);
+          results1.push(void 0);
         }
       } else {
-        results.push(void 0);
+        results1.push(void 0);
       }
     }
-    return results;
+    return results1;
   };
 
   
@@ -669,11 +890,11 @@
   // If powerup.type is 'axe', set hasAxe to true, 
   // Otherwise set hasWacker to true
   checkPowerupCollision = function() {
-    var bunnyBoxSize, bunnyLeft, bunnyTop, j, len, powerup, results;
+    var bunnyBoxSize, bunnyLeft, bunnyTop, j, len, powerup, results1;
     bunnyLeft = BUNNY_X - BUNNY_SIZE;
     bunnyTop = bunnyY - BUNNY_SIZE;
     bunnyBoxSize = BUNNY_SIZE * 2;
-    results = [];
+    results1 = [];
     for (j = 0, len = powerups.length; j < len; j++) {
       powerup = powerups[j];
       if (powerup.got === false) {
@@ -683,18 +904,18 @@
             hasAxe = true;
           }
           if (powerup.type === 'wacker') {
-            results.push(hasWacker = true);
+            results1.push(hasWacker = true);
           } else {
-            results.push(void 0);
+            results1.push(void 0);
           }
         } else {
-          results.push(void 0);
+          results1.push(void 0);
         }
       } else {
-        results.push(void 0);
+        results1.push(void 0);
       }
     }
-    return results;
+    return results1;
   };
 
   // YOUR CODE HERE
@@ -773,7 +994,7 @@
   };
 
   handleClick = function(x, y) {
-    var i, j, ref, results;
+    var i, j, ref, results1;
     switch (screen) {
       case 'HOME':
         if (hitBtn('play', x, y)) {
@@ -797,25 +1018,25 @@
         if (hitBtn('back', x, y)) {
           return screen = 'HOME';
         } else {
-          results = [];
+          results1 = [];
           for (i = j = 0, ref = SKINS.length; (0 <= ref ? j < ref : j > ref); i = 0 <= ref ? ++j : --j) {
             if (hitBtn('skin' + i, x, y)) {
               if (owned[i]) {
                 currentSkin = i;
-                results.push(saveData());
+                results1.push(saveData());
               } else if (coins >= SKIN_COST[i]) {
                 coins -= SKIN_COST[i];
                 owned[i] = true;
                 currentSkin = i;
-                results.push(saveData());
+                results1.push(saveData());
               } else {
-                results.push(void 0);
+                results1.push(void 0);
               }
             } else {
-              results.push(void 0);
+              results1.push(void 0);
             }
           }
-          return results;
+          return results1;
         }
     }
   };

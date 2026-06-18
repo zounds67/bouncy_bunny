@@ -64,6 +64,14 @@ CARROT_HEIGHT = 30
 # BUILT-IN CHARACTER DRAWING FUNCTIONS
 # ============================================================
 
+
+# ============================================================
+# CSS PIXEL ART LOADER
+# Drop .css files from pixelart-to-css.com in the skins/ folder,
+# then add a line to SKIN_FILES below to use them!
+# ============================================================
+
+
 # Pokeball - drawn with canvas shapes (clean circle is better than pixel art)
 drawPokeball = (cx, cy, size = 40) ->
   r = size / 2 - 1
@@ -137,6 +145,78 @@ SKINS = [
 ]
 SKIN_COST = [0, 50, 75]
 
+SKIN_FILES = [
+  { name: 'Bulbasaur', file: 'skins/bulbasaur.css', cost: 100 }
+  { name: 'Yoshi Egg', file: 'skins/yoshi-egg.css', cost: 125 }
+  { name: 'Meltan',    file: 'skins/meltan.css',    cost: 150 }
+  { name: 'Charizard', file: 'skins/charizard.css', cost: 175 }
+  { name: 'Ditto',     file: 'skins/ditto.css',     cost: 200 }
+  { name: 'BoxerDude', file: 'skins/boxer-dude.css', cost: 225 }
+  { name: 'Mushroom',  file: 'skins/mushroom.css',  cost: 250 }
+  { name: 'Goomba',    file: 'skins/goomba.css',    cost: 275 }
+]
+
+# Parse pixelart-to-css.com CSS into a grid of colors
+parseCssPixelArt = (cssText) ->
+  cellSize = parseInt(cssText.match(/width:\s*(\d+)px/)?[1] or '13')
+  pattern = /(\d+)px\s+(\d+)px\s+0\s+0\s+rgba?\(([^)]+)\)/g
+  pixels = {}
+  minX = minY = Infinity
+  maxX = maxY = -Infinity
+  while (match = pattern.exec(cssText))
+    x = parseInt(match[1])
+    y = parseInt(match[2])
+    [r, g, b] = match[3].split(',').slice(0, 3).map (s) -> parseInt(s.trim())
+    pixels["#{x},#{y}"] = "rgb(#{r},#{g},#{b})"
+    minX = Math.min(minX, x); maxX = Math.max(maxX, x)
+    minY = Math.min(minY, y); maxY = Math.max(maxY, y)
+  cols = (maxX - minX) / cellSize + 1
+  rows = (maxY - minY) / cellSize + 1
+  grid = []
+  for r in [0...rows]
+    row = []
+    for c in [0...cols]
+      row.push pixels["#{minX + c * cellSize},#{minY + r * cellSize}"] or null
+    grid.push row
+  { grid, cols, rows }
+
+# Draw a parsed pixel art grid centered at (cx, cy)
+drawCssPixelArt = (cx, cy, size, data) ->
+  return unless data
+  maxDim = Math.max(data.rows, data.cols)
+  pixelSize = size / maxDim
+  startX = cx - (data.cols * pixelSize) / 2
+  startY = cy - (data.rows * pixelSize) / 2
+  for r in [0...data.rows]
+    for c in [0...data.cols]
+      color = data.grid[r][c]
+      continue unless color
+      ctx.fillStyle = color
+      ctx.fillRect startX + c * pixelSize, startY + r * pixelSize, pixelSize + 0.5, pixelSize + 0.5
+
+# Load all CSS skin files, then call onDone
+loadAllSkins = (onDone) ->
+  return onDone() if SKIN_FILES.length is 0
+  promises = SKIN_FILES.map (skinDef) ->
+    fetch(skinDef.file)
+      .then (r) -> r.text()
+      .then (css) -> { skinDef, data: parseCssPixelArt(css) }
+      .catch (err) ->
+        console.error "Failed to load #{skinDef.file}:", err
+        null
+  Promise.all(promises).then (results) ->
+    for result in results when result
+      do (result) ->
+        SKINS.push {
+          name: result.skinDef.name
+          color: '#FFFFFF'
+          draw: (cx, cy, size = 40) -> drawCssPixelArt cx, cy, size, result.data
+        }
+        SKIN_COST.push result.skinDef.cost
+    while owned.length < SKINS.length
+      owned.push false
+    onDone()
+
 # ============================================================
 # GAME VARIABLES (don't change this section)
 # ============================================================
@@ -178,7 +258,10 @@ setup = ->
   canvas.addEventListener 'click', onClick
   canvas.addEventListener 'touchstart', onTouch, { passive: false }
   document.addEventListener 'keydown', onKey
-  gameLoop()
+  # Load CSS skins, then start the game
+  # This is a bit complicated - but it helps things load faster.
+  loadAllSkins -> gameLoop()
+
 
 
 # ============================================================
@@ -418,29 +501,37 @@ drawShop = ->
   ctx.fillText 'Coins: ' + coins, W / 2, 80
 
   for i in [0...SKINS.length]
-    cardY = 100 + i * 75
+    col = i % 2
+    row = Math.floor(i / 2)
+    cardX = 30 + col * 215
+    cardY = 100 + row * 75
+    cardW = 200
     ctx.fillStyle = if i is currentSkin then '#E0FFE0' else '#F0F0F0'
-    ctx.fillRect 40, cardY, W - 80, 65
-    ctx.fillStyle = SKINS[i].color
-    ctx.beginPath()
-    ctx.arc 80, cardY + 32, 18, 0, Math.PI * 2
-    ctx.fill()
-    ctx.strokeStyle = '#333'
-    ctx.lineWidth = 2
-    ctx.stroke()
+    ctx.fillRect cardX, cardY, cardW, 65
+    # Draw character preview - use draw function if available
+    if SKINS[i].draw
+      SKINS[i].draw cardX + 25, cardY + 32, 32
+    else
+      ctx.fillStyle = SKINS[i].color
+      ctx.beginPath()
+      ctx.arc cardX + 25, cardY + 32, 16, 0, Math.PI * 2
+      ctx.fill()
+      ctx.strokeStyle = '#333'
+      ctx.lineWidth = 2
+      ctx.stroke()
     ctx.fillStyle = '#333'
-    ctx.font = '16px Arial'
+    ctx.font = 'bold 12px Arial'
     ctx.textAlign = 'left'
-    ctx.fillText SKINS[i].name, 110, cardY + 28
-    ctx.font = '12px Arial'
-    ctx.fillText (if owned[i] then 'Owned' else SKIN_COST[i] + ' coins'), 110, cardY + 46
+    ctx.fillText SKINS[i].name, cardX + 48, cardY + 25
+    ctx.font = '10px Arial'
+    ctx.fillText (if owned[i] then 'Owned' else SKIN_COST[i] + ' coins'), cardX + 48, cardY + 42
     if i is currentSkin
-      drawBtn 'skin' + i, W - 130, cardY + 18, 70, 30, 'Wearing', '#4CAF50'
+      drawBtn 'skin' + i, cardX + 115, cardY + 18, 80, 30, 'Wearing', '#4CAF50'
     else if owned[i]
-      drawBtn 'skin' + i, W - 130, cardY + 18, 70, 30, 'Wear', '#2196F3'
+      drawBtn 'skin' + i, cardX + 115, cardY + 18, 80, 30, 'Wear', '#2196F3'
     else
       btnColor = if coins >= SKIN_COST[i] then '#FF9800' else '#999'
-      drawBtn 'skin' + i, W - 130, cardY + 18, 70, 30, 'Buy', btnColor
+      drawBtn 'skin' + i, cardX + 115, cardY + 18, 80, 30, 'Buy', btnColor
 
   drawBtn 'back', W / 2 - 60, H - 70, 120, 40, 'Back', '#666'
 
