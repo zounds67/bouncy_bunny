@@ -51,7 +51,7 @@ POWERUP_EVERY = 15
 CARROT_POINTS = 10
 
 # How many coins do you earn per carrot?
-CARROT_COINS = 3
+CARROT_COINS = 3000
 
 CARROT_WIDTH = 10
 
@@ -302,6 +302,14 @@ loadData = ->
 
 drawBunny = (x, y, skinIndex = currentSkin) ->
   # YOUR CODE HERE
+  skin = SKINS[skinIndex]
+
+  # If the skin has a draw function, use it and skip the rest of this function
+  if skin.draw
+    skin.draw x, y, BUNNY_SIZE * 2
+    return
+
+
   # Step 1: Set fill color to the skin color and draw the body circle  
   
   ctx.fillStyle = SKINS[skinIndex].color

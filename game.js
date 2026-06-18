@@ -57,7 +57,7 @@
   CARROT_POINTS = 10;
 
   // How many coins do you earn per carrot?
-  CARROT_COINS = 3;
+  CARROT_COINS = 3000;
 
   CARROT_WIDTH = 10;
 
@@ -402,7 +402,14 @@
   // - Use ctx.fill() to fill shapes
   // - The eyes should be at x-6 and x+6, slightly above center (y-4)
   drawBunny = function(x, y, skinIndex = currentSkin) {
+    var skin;
     // YOUR CODE HERE
+    skin = SKINS[skinIndex];
+    // If the skin has a draw function, use it and skip the rest of this function
+    if (skin.draw) {
+      skin.draw(x, y, BUNNY_SIZE * 2);
+      return;
+    }
     // Step 1: Set fill color to the skin color and draw the body circle  
     ctx.fillStyle = SKINS[skinIndex].color;
     ctx.beginPath();
