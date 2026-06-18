@@ -154,6 +154,7 @@ SKIN_FILES = [
   { name: 'BoxerDude', file: 'skins/boxer-dude.css', cost: 225 }
   { name: 'Mushroom',  file: 'skins/mushroom.css',  cost: 250 }
   { name: 'Goomba',    file: 'skins/goomba.css',    cost: 275 }
+  { name: 'Hammer',    file: 'skins/hammer.css',    cost: 110}
 ]
 
 # Parse pixelart-to-css.com CSS into a grid of colors

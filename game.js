@@ -195,6 +195,11 @@
       name: 'Goomba',
       file: 'skins/goomba.css',
       cost: 275
+    },
+    {
+      name: 'Hammer',
+      file: 'skins/hammer.css',
+      cost: 110
     }
   ];
 
