@@ -7,7 +7,7 @@
   // ============================================================
 
   // --- Canvas size (don't change these) ---
-  var BUNNY_SIZE, BUNNY_X, CARROT_COINS, CARROT_HEIGHT, CARROT_POINTS, CARROT_WIDTH, FLAP_POWER, GAP_SIZE, GRAVITY, H, POWERUP_EVERY, SKINS, SKIN_COST, SKIN_FILES, SPAWN_TIME, W, WALL_SPEED, WALL_WIDTH, applyGravity, bestScore, boxesOverlap, btns, bunnySpeed, bunnyY, canvas, carrots, checkCarrotCollision, checkCeiling, checkGround, checkPowerupCollision, checkWallCollision, coins, ctx, currentSkin, draw, drawBackground, drawBtn, drawBunny, drawCarrots, drawCssPixelArt, drawGame, drawHome, drawOver, drawPacman, drawPokeball, drawPowerupIndicators, drawPowerups, drawScore, drawShop, drawWalls, flap, frames, gameLoop, gameOver, handleClick, hasAxe, hasWacker, hitBtn, loadAllSkins, loadData, moveBunny, moveCarrots, movePowerups, moveWalls, onClick, onKey, onTouch, owned, parseCssPixelArt, powerups, removeOldStuff, resetGame, saveData, score, screen, setup, spawnWall, update, waiting, walls;
+  var BUNNY_SIZE, BUNNY_X, CARROT_COINS, CARROT_HEIGHT, CARROT_POINTS, CARROT_WIDTH, FLAP_POWER, GAP_SIZE, GRAVITY, H, POWERUP_EVERY, SKINS, SKIN_COST, SKIN_FILES, SPAWN_TIME, W, WALL_SPEED, WALL_WIDTH, applyGravity, bestScore, boxesOverlap, btns, bunnySpeed, bunnyY, canvas, carrots, checkCarrotCollision, checkCeiling, checkGround, checkPowerupCollision, checkWallCollision, coins, ctx, currentSkin, draw, drawBackground, drawBtn, drawBunny, drawCarrots, drawCssPixelArt, drawGame, drawHome, drawOver, drawPacman, drawPokeball, drawPowerupIndicators, drawPowerups, drawScore, drawShop, drawWalls, flap, frames, gameLoop, gameOver, handleClick, hasAxe, hasWacker, hitBtn, loadAllSkins, loadData, moveBunny, moveCarrots, movePowerups, moveWalls, onClick, onKey, onTouch, owned, parseCssPixelArt, powerups, removeOldStuff, resetGame, saveData, score, screen, setup, spawnWall, totalWalls, update, waiting, walls;
 
   W = 480;
 
@@ -51,7 +51,7 @@
   SPAWN_TIME = 100;
 
   // How often do powerups appear? (every N walls)
-  POWERUP_EVERY = 15;
+  POWERUP_EVERY = 12;
 
   // How many points for collecting a carrot?
   CARROT_POINTS = 10;
@@ -349,6 +349,8 @@
   currentSkin = 0;
 
   owned = [true, false, false, false, false, false];
+
+  totalWalls = 0;
 
   btns = {};
 
@@ -954,6 +956,7 @@
       botY: botY,
       scored: false
     });
+    totalWalls += 1;
     // Choose when to have a carrot appear
     if (Math.random() < 0.1) { // Change this to make it less frequent
       carrotY = topH + 20 + Math.random() * (GAP_SIZE - 60);
@@ -963,7 +966,7 @@
         got: false
       });
     }
-    if (walls.length % POWERUP_EVERY === 0) {
+    if (totalWalls % POWERUP_EVERY === 0.0) {
       type = Math.random() < 0.5 ? 'axe' : 'wacker';
       return powerups.push({
         x: W + WALL_WIDTH + 20,

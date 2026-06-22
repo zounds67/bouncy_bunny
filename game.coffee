@@ -45,7 +45,7 @@ GAP_SIZE = 165
 SPAWN_TIME = 100
 
 # How often do powerups appear? (every N walls)
-POWERUP_EVERY = 15
+POWERUP_EVERY = 12
 
 # How many points for collecting a carrot?
 CARROT_POINTS = 10
@@ -245,6 +245,7 @@ bestScore = 0
 coins = 0
 currentSkin = 0
 owned = [true, false, false, false, false, false]
+totalWalls = 0
 
 btns = {}
 
@@ -768,13 +769,14 @@ spawnWall = ->
   topH = 50 + Math.random() * (H - GAP_SIZE - 110)
   botY = topH + GAP_SIZE
   walls.push { x: W, topH: topH, botY: botY, scored: false }
+  totalWalls += 1
 
   # Choose when to have a carrot appear
   if Math.random() < 0.1  # Change this to make it less frequent
     carrotY = topH + 20 + Math.random() * (GAP_SIZE - 60)
     carrots.push { x: W + WALL_WIDTH / 2 - 8, y: carrotY, got: false }
 
-  if walls.length % POWERUP_EVERY is 0
+  if totalWalls % POWERUP_EVERY == 0.0
     type = if Math.random() < 0.5 then 'axe' else 'wacker'
     powerups.push { x: W + WALL_WIDTH + 20, y: topH + GAP_SIZE / 2 - 15, type: type, got: false }
 
